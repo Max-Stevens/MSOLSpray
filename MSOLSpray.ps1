@@ -68,7 +68,12 @@ function Invoke-MSOLSpray{
     [string]
     $URL = "https://login.microsoft.com",
 
+    # Specify a target tenant ID (used to force authentication attempts against a specific tenant for B2B users)
     [Parameter(Position = 4, Mandatory = $False)]
+    [string]
+    $TenantId = "common",
+
+    [Parameter(Position = 5, Mandatory = $False)]
     [switch]
     $Force
   )
@@ -96,7 +101,7 @@ function Invoke-MSOLSpray{
         # Setting up the web request
         $BodyParams = @{'resource' = 'https://graph.windows.net'; 'client_id' = '1b730954-1685-4b74-9bfd-dac224a7b894' ; 'client_info' = '1' ; 'grant_type' = 'password' ; 'username' = $username ; 'password' = $password ; 'scope' = 'openid'}
         $PostHeaders = @{'Accept' = 'application/json'; 'Content-Type' =  'application/x-www-form-urlencoded'}
-        $webrequest = Invoke-WebRequest $URL/common/oauth2/token -Method Post -Headers $PostHeaders -Body $BodyParams -ErrorVariable RespErr 
+        $webrequest = Invoke-WebRequest $URL/$TenantId/oauth2/token -Method Post -Headers $PostHeaders -Body $BodyParams -ErrorVariable RespErr 
 
         # If we get a 200 response code it's a valid cred
         If ($webrequest.StatusCode -eq "200"){
